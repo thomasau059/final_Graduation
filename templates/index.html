@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍉 西瓜分類系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fbfe24ff 0%, #e7fa15ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #4d7d38ff;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+
+        .upload-area.dragover {
+            border-color: #718e49ff;
+            background: #e8f5e9;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #66eae1ff 0%, #9f8f3dff 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-area {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f8f9ff;
+        }
+
+        .result-label {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .probabilities {
+            margin-top: 20px;
+        }
+
+        .prob-item {
+            margin-bottom: 15px;
+        }
+
+        .prob-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .prob-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prob-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .prob-good { background: linear-gradient(90deg, #4CAF50, #45a049); }
+        .prob-not-good { background: linear-gradient(90deg, #f44336, #da190b); }
+        .prob-others { background: linear-gradient(90deg, #ff9800, #f57c00); }
+
+        .processing-time {
+            text-align: center;
+            color: #666;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .file-name {
+            text-align: center;
+            color: #667eea;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍉 西瓜分類系統</h1>
+        <p class="subtitle">AI 智能西瓜品質檢測</p>
+
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <div class="upload-text">點擊或拖曳圖片到此處</div>
+                <input type="file" name="file" id="fileInput" accept="image/*" required>
+                <button type="button" class="btn" onclick="document.getElementById('fileInput').click()">
+                    選擇圖片
+                </button>
+            </div>
+
+            <div class="file-name" id="fileName"></div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="submit" class="btn" id="submitBtn" disabled>
+                    🔍 開始分析
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #667eea; font-weight: bold;">分析中...</p>
+        </div>
+
+        {% if label %}
+        <div class="result-area">
+            <div class="result-label">{{ label }}</div>
+            
+            {% if imagesource %}
+            <img src="{{ imagesource }}" alt="預測圖片" class="image-preview">
+            {% endif %}
+
+            {% if prob_good is defined %}
+            <div class="probabilities">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #333;">📊 詳細機率分析</h3>
+                
+                <div class="prob-item">
+                    <div class="prob-label">
+                        <span>🍉 好西瓜</span>
+                        <span>{{ "%.1f"|format(prob_good) }}%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill prob-good" style="width: {{ prob_good }}%;">
+                            {{ "%.1f"|format(prob_good) }}%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prob-item">
+                    <div class="prob-label">
+                        <span>🍉 不好西瓜</span>
+                        <span>{{ "%.1f"|format(prob_not_good) }}%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill prob-not-good" style="width: {{ prob_not_good }}%;">
+                            {{ "%.1f"|format(prob_not_good) }}%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prob-item">
+                    <div class="prob-label">
+                        <span>❓ 其他物體</span>
+                        <span>{{ "%.1f"|format(prob_others) }}%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill prob-others" style="width: {{ prob_others }}%;">
+                            {{ "%.1f"|format(prob_others) }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if processing_time %}
+            <div class="processing-time">
+                ⏱️ 處理時間: {{ processing_time }} 秒
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="info-box">
+            <strong>💡 使用說明：</strong>
+            <ul>
+                <li>支援格式：JPG, JPEG, PNG</li>
+                <li>建議圖片大小：小於 10MB</li>
+                <li>拍攝建議：光線充足、西瓜清晰可見</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+
+        // 文件選擇事件
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                fileName.textContent = '📁 已選擇: ' + this.files[0].name;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // 拖放功能
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileName.textContent = '📁 已選擇: ' + files[0].name;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // 表單提交
+        uploadForm.addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

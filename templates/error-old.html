@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>錯誤 - 西瓜分類系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: shake 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes shake {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+        
+        .error-title {
+            color: #e74c3c;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            color: #666;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .error-details {
+            background: #fff5f5;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            border-radius: 8px;
+        }
+        
+        .image-preview {
+            margin: 35px 0;
+        }
+        
+        .preview-image {
+            max-width: 400px;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: 4px solid #ffcccc;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-3px);
+        }
+        
+        .requirements-box {
+            background: #fff8e1;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 35px;
+            text-align: left;
+        }
+        
+        .requirements-title {
+            color: #e65100;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirements-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .requirements-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffe0b2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirements-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .check-icon {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .warning-icon {
+            color: #ff9800;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .solution-box {
+            background: #e8f5e9;
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .solution-title {
+            color: #1b5e20;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 30px 20px;
+            }
+            
+            .error-title {
+                font-size: 2.2em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .preview-image {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            {% if error_title and '不是西瓜' in error_title %}
+            🚫
+            {% elif error_title and '系統錯誤' in error_title %}
+            🔧
+            {% else %}
+            ❌
+            {% endif %}
+        </div>
+        
+        <h1 class="error-title">{{ error_title }}</h1>
+        
+        <div class="error-message">
+            {{ error_message }}
+        </div>
+        
+        {% if error_details %}
+        <div class="error-details">
+            <strong>📋 詳細資訊：</strong> {{ error_details }}
+        </div>
+        {% endif %}
+        
+        {% if imagesource %}
+        <div class="image-preview">
+            <h3>📸 您上傳的圖片：</h3>
+            <img src="{{ imagesource }}" alt="已上傳圖片" class="preview-image">
+        </div>
+        {% endif %}
+        
+        {% if error_solution %}
+        <div class="solution-box">
+            <div class="solution-title">💡 解決建議</div>
+            <p>{{ error_solution }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="requirements-box">
+            <div class="requirements-title">📋 正確的西瓜圖片要求</div>
+            <ul class="requirements-list">
+                <li><span class="check-icon">✓</span> 圖片清晰，對焦準確</li>
+                <li><span class="check-icon">✓</span> 拍攝整個西瓜，不要裁切</li>
+                <li><span class="check-icon">✓</span> 光線充足，避免陰影</li>
+                <li><span class="check-icon">✓</span> 背景乾淨，無遮擋物</li>
+                <li><span class="warning-icon">⚠</span> 非插圖、卡通或繪圖</li>
+                <li><span class="warning-icon">⚠</span> 非局部特寫圖片</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">
+                <span>🔄 重新上傳圖片</span>
+            </a>
+            
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <span>↩️ 返回上一頁</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

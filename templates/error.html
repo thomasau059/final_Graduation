@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ 錯誤提示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fc7a00ff 0%, #fa0000ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        h1 {
+            color: #f44336;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .error-message {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: left;
+            color: #856404;
+        }
+
+        .error-solution {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: left;
+            color: #0c5460;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .tips {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .tips h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .tips ul {
+            margin-left: 20px;
+        }
+
+        .tips li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">⚠️</div>
+        
+        <h1>{{ error_title or '發生錯誤' }}</h1>
+        
+        <div class="error-message">
+            {{ error_message or '處理圖片時發生錯誤' }}
+        </div>
+
+        {% if error_details %}
+        <div class="error-details">
+            <strong>📋 詳細信息：</strong><br>
+            {{ error_details }}
+        </div>
+        {% endif %}
+
+        {% if imagesource %}
+        <img src="{{ imagesource }}" alt="上傳的圖片" class="image-preview">
+        {% endif %}
+
+        {% if error_solution %}
+        <div class="error-solution">
+            <strong>💡 解決方案：</strong><br>
+            {{ error_solution }}
+        </div>
+        {% endif %}
+
+        <div class="tips">
+            <h3>🎯 建議：</h3>
+            <ul>
+                <li>確保上傳的是清晰的西瓜圖片</li>
+                <li>圖片中西瓜應該清晰可見</li>
+                <li>避免過度模糊或光線不足的圖片</li>
+                <li>支援格式：JPG, JPEG, PNG</li>
+                <li>建議圖片大小：小於 10MB</li>
+            </ul>
+        </div>
+
+        <a href="/" class="btn">🔙 重新上傳</a>
+    </div>
+</body>
+</html>

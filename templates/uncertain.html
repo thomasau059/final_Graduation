@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❓ 信心度不足</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #c6fc3bff 0%, #00ff84ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .uncertain-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            color: #ff9800;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .message {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .confidence-box {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .confidence-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .confidence-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .predicted-class {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 1.1em;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border: 2px dashed #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .warning-box h3 {
+            color: #ff9800;
+            margin-bottom: 15px;
+        }
+
+        .warning-box ul {
+            margin-left: 20px;
+        }
+
+        .warning-box li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-card {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .info-card p {
+            color: #555;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="uncertain-icon">❓</div>
+        
+        <h1>預測信心度不足</h1>
+        
+        <div class="message">
+            系統無法以高信心度確定此圖片的類別。<br>
+            建議上傳更清晰的圖片以獲得更準確的結果。
+        </div>
+
+        <div class="confidence-box">
+            <div class="confidence-label">當前信心度</div>
+            <div class="confidence-value">{{ "%.1f"|format(confidence) }}%</div>
+            <div class="confidence-label">（需要 ≥ 60% 才能確定）</div>
+        </div>
+
+        {% if predicted_class %}
+        <div class="predicted-class">
+            <strong>📊 最可能的類別：</strong> {{ predicted_class }}
+        </div>
+        {% endif %}
+
+        {% if imagesource %}
+        <img src="{{ imagesource }}" alt="上傳的圖片" class="image-preview">
+        {% endif %}
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>🎯 信心度閾值</h4>
+                <p>60%</p>
+            </div>
+            <div class="info-card">
+                <h4>📈 您的信心度</h4>
+                <p>{{ "%.1f"|format(confidence) }}%</p>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ 可能的原因：</h3>
+            <ul>
+                <li>圖片模糊或光線不足</li>
+                <li>西瓜在圖片中不夠清晰</li>
+                <li>拍攝角度或距離不佳</li>
+                <li>圖片包含多個物體，造成干擾</li>
+                <li>圖片質量過低或解析度不足</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h3>💡 改善建議：</h3>
+            <ul>
+                <li>使用充足的自然光或照明</li>
+                <li>確保西瓜完整清晰地出現在畫面中</li>
+                <li>使用較高解析度的相機或手機</li>
+                <li>避免背景雜亂，專注拍攝西瓜</li>
+                <li>保持鏡頭穩定，避免模糊</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="/" class="btn">🔄 重新上傳</a>
+        </div>
+    </div>
+</body>
+</html>

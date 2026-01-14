@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>結果不確定 - 西瓜分類系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .uncertain-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 750px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .uncertain-icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .uncertain-title {
+            color: #ff9800;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .confidence-meter {
+            width: 100%;
+            height: 35px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            margin: 35px 0;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #ddd;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9800, #ff5722);
+            border-radius: 18px;
+            transition: width 1.5s ease;
+        }
+        
+        .confidence-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .prediction-info {
+            background: #fff3e0;
+            border: 3px dashed #ff9800;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 2px dashed #ffe0b2;
+            font-size: 1.1em;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .warning-box {
+            background: #fff8e1;
+            border-left: 6px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            border-radius: 8px;
+        }
+        
+        .image-preview {
+            margin: 35px 0;
+        }
+        
+        .preview-image {
+            max-width: 450px;
+            max-height: 350px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border: 4px solid #ff9800;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            border: none;
+        }
+        
+        .btn-accept {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-accept:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-retry {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+        }
+        
+        .btn-retry:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-manual {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-manual:hover {
+            background: #e9ecef;
+            transform: translateY(-3px);
+        }
+        
+        .help-box {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .help-title {
+            color: #1565c0;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .help-list {
+            padding-left: 25px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .help-list li {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .uncertain-container {
+                padding: 30px 20px;
+            }
+            
+            .uncertain-title {
+                font-size: 2.2em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .preview-image {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="uncertain-container">
+        <div class="uncertain-icon">🤔</div>
+        
+        <h1 class="uncertain-title">結果不確定</h1>
+        
+        <p style="color: #666; font-size: 1.3em; margin-bottom: 30px; line-height: 1.6;">
+            系統對分析結果的信心度不足，無法做出準確判斷。<br>
+            建議重新拍攝更清晰的圖片。
+        </p>
+        
+        <div class="confidence-meter">
+            <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+            <div class="confidence-label">信心度: {{ "%.1f"|format(confidence) }}%</div>
+        </div>
+        
+        <div class="prediction-info">
+            <div class="info-item">
+                <span class="info-label">系統預測：</span>
+                <span class="info-value">{{ predicted_class }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">信心等級：</span>
+                <span class="info-value">
+                    {% if confidence >= 60 %}
+                    🟢 高
+                    {% elif confidence >= 40 %}
+                    🟡 中
+                    {% else %}
+                    🔴 低
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ 注意事項：</strong><br>
+            低信心度的結果可能不準確。這通常是因為：
+            • 圖片模糊或對焦不準<br>
+            • 光線不足或過度曝光<br>
+            • 拍攝角度不佳<br>
+            • 圖片中有干擾物體
+        </div>
+        
+        {% if imagesource %}
+        <div class="image-preview">
+            <h3>📸 您上傳的圖片：</h3>
+            <img src="{{ imagesource }}" alt="已上傳圖片" class="preview-image">
+        </div>
+        {% endif %}
+        
+        <div class="help-box">
+            <div class="help-title">💡 拍攝高品質西瓜圖片的技巧</div>
+            <ul class="help-list">
+                <li><strong>光線充足：</strong>在自然光下拍攝，避免陰影</li>
+                <li><strong對焦清晰：</strong>確保西瓜紋路清晰可見</li>
+                <li><strong>完整拍攝：</strong>拍攝整個西瓜，不要裁切</li>
+                <li><strong>角度正面：</strong>從正面拍攝，避免傾斜角度</li>
+                <li><strong>背景乾淨：</strong>選擇單一顏色的背景</li>
+                <li><strong>避免反光：</strong>注意不要有強烈反光點</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <form action="/" method="GET" style="display: inline;">
+                <button type="submit" class="btn btn-accept">
+                    <span>✅ 接受此結果</span>
+                </button>
+            </form>
+            
+            <a href="/" class="btn btn-retry">
+                <span>🔄 重新拍攝上傳</span>
+            </a>
+            
+            <a href="/manual" class="btn btn-manual">
+                <span>👨‍🏫 請求人工審核</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
